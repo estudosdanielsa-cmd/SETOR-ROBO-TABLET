@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>BAIXA DE ESTOQUE SINCRONIZADA</title>
+<style>
+  
+@keyframes flutuar {
+    0%   { transform: translate(5vw, 10vh) rotate(0deg); }
+    25%  { transform: translate(70vw, 20vh) rotate(10deg); }
+    50%  { transform: translate(60vw, 70vh) rotate(0deg); }
+    75%  { transform: translate(10vw, 60vh) rotate(-10deg); }
+    100% { transform: translate(5vw, 10vh) rotate(0deg); }
+}
+
+.marca-dagua-viva {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    font-size: 45px; 
+    font-weight: 900;
+    color: rgba(255, 152, 0, 0.15); 
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    white-space: nowrap;
+    pointer-events: none; 
+    z-index: 9999; 
+    animation: flutuar 40s linear infinite;
+    user-select: none;
+}
+
+:root { 
+    --primary: #fbc02d; 
+    --dark-bg: #0d0d0d; 
+    --card-bg: #1a1a1a; 
+    --danger: #ff5252; 
+    --success: #4caf50; 
+    --blue: #2196f3; 
+    --purple: #6f42c1;
+}
+
+body { margin:0; font-family:'Segoe UI', sans-serif; background:var(--dark-bg); color:#fff; }
+
+.nav-topo {
+    background:#000;
+    padding:15px;
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    border-bottom:2px solid var(--primary);
+}
+
+.nav-topo a {
+    padding:10px 20px;
+    border-radius:8px;
+    text-decoration:none;
+    color:white;
+    font-weight:bold;
+    font-size:11px;
+    text-transform:uppercase;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    border: none;
+}
+
+.card { max-width:1050px; margin:30px auto; background:var(--card-bg); padding:25px; border-radius:12px; border:1px solid #333; }
+
+.box { border:1px solid var(--danger); border-radius:10px; padding:20px; margin-bottom:20px; }
+
+label { font-size:11px; color:#999; display:block; margin-top:10px; text-transform:uppercase; font-weight:bold; }
+
+input, select { 
+    width:100%; padding:12px; background:#262626; border:1px solid #444; 
+    color:#fff; border-radius:6px; box-sizing:border-box; outline:none; font-size:14px;
+}
+
+.cards-estoque { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:20px 0; }
+.card-box { padding:20px; border-radius:10px; text-align:center; font-weight:bold; color:white; }
+
+.btn-baixa { 
+    width:100%; padding:18px; background:var(--danger); color:white; border:none; 
+    border-radius:8px; font-weight:bold; cursor:pointer; text-transform:uppercase; 
+    font-size:16px; margin-top:10px; 
+}
+
+table { width:100%; margin-top:30px; font-size:11px; border-collapse:collapse; }
+th { color:var(--primary); padding:12px; border-bottom:2px solid #333; text-transform:uppercase; background:#111; }
+td { padding:15px; text-align:center; border-bottom:1px solid #222; }
+
+.btn-lixeira { background:none; border:none; color:#999; cursor:pointer; font-size:18px; }
+</style>
+</head>
+
+<body>
+
+<div class="marca-dagua-viva">D.artcom--Daniel</div>
+
+<nav class="nav-topo">
+    <a href="../index.html" style="background: var(--blue);">🏠 INÍCIO</a>
+    <a href="entrada.html" style="background:var(--success);">📥 ENTRADA</a>
+    <a href="cadastro.html" style="background:var(--purple);">📝 CADASTRO</a>
+    <a href="relatorio.html" style="background:#000; border:1px solid var(--primary); color:var(--primary);">📊 RELATÓRIO</a>
+    <a href="geral.html" style="background:var(--primary); color:#000;">📊 RELATÓRIO GERAL</a>
+</nav>
+
+<div class="card">
+    <h2 style="text-align:center; color:var(--danger); text-transform:uppercase; letter-spacing:1px;">📤 BAIXA DE ESTOQUE SINCRONIZADA</h2>
+
+    <div class="box">
+        <label>🔍 BUSCA INTELIGENTE (CÓD, PROJ, PROD, MEDIDA, CLI)</label>
+
+        <div style="position:relative;">
+            <input
+                type="text"
+                id="buscaSaida"
+                oninput="buscaInteligenteSaida()"
+                placeholder="Digite qualquer informação para buscar..."
+                style="padding-right:45px;"
+            >
+
+            <button
+                onclick="limparBuscaSaida()"
+                style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--primary);cursor:pointer;font-size:18px;"
+            >
+                🧹
+            </button>
+        </div>
+        
+        <label style="margin-top:15px;">ITEM SELECIONADO (VÍNCULO DIRETO COM ENTRADA)</label>
+        <select id="selectSaida" onchange="atualizarSaldos()">
+            <option value="">Selecione o item...</option>
+        </select>
+    </div>
+
+    <div class="cards-estoque">
+        <div class="card-box" style="background:var(--success)">ENTRADA TOTAL<br><span id="v-entrada" style="font-size:24px;">0</span></div>
+        <div class="card-box" style="background:#455a64">JÁ RETIRADO<br><span id="v-saida" style="font-size:24px;">0</span></div>
+        <div class="card-box" style="background:var(--blue)">SALDO DISPONÍVEL<br><span id="v-saldo" style="font-size:24px;">0</span></div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+        <div><label>DESTINO / OBSERVAÇÃO</label><input id="destinoSaida" placeholder="Ex: Expedição / Cliente"></div>
+        <div><label>QTD PARA RETIRADA</label><input type="number" id="qtdSaida" placeholder="0"></div>
+    </div>
+
+    <button class="btn-baixa" onclick="confirmarSaida()">🚀 CONFIRMAR BAIXA NO ESTOQUE</button>
+
+    <div style="position:relative; margin-top:25px;">
+    <input
+        type="text"
+        id="filtroHistoricoSaida"
+        placeholder="🔍 Pesquisar histórico de saída..."
+        onkeyup="filtrarHistoricoSaida()"
+        style="width:100%;padding:12px;background:#111;border:1px solid #333;color:#999;border-radius:6px;border-left:4px solid var(--danger);padding-right:45px;"
+    >
+
+    <button
+        onclick="limparFiltroHistoricoSaida()"
+        style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--primary);cursor:pointer;font-size:18px;"
+    >
+        🧹
+    </button>
+</div>
+
+<table>
+        <thead>
+            <tr>
+                <th>ÍNDICE</th><th>DATA</th><th>CÓDIGO</th><th>CLIENTE / PROJETO</th><th>PRODUTO / MEDIDA</th><th>QTD</th><th>DESTINO</th><th>AÇÕES</th>
+            </tr>
+        </thead>
+        <tbody id="corpoTabelaSaida"></tbody>
+    </table>
+</div>
+
+<script>
+const KEY_CAD = "produtos";
+const KEY_ENT = "historicoEntrada";
+const KEY_SAI = "HIST_SAIDA_OFICIAL_V1";
+
+window.onload = () => {
+    carregarSelectSaida();
+    renderizarTabelaSaida();
+};
+
+function carregarSelectSaida() {
+    const produtos = JSON.parse(localStorage.getItem(KEY_CAD)) || [];
+    const select = document.getElementById('selectSaida');
+    select.innerHTML = '<option value="">Selecione o item...</option>';
+    
+    produtos.forEach(p => {
+        let op = document.createElement('option');
+        op.value = p.id;
+        op.text = `${p.codigo} | ${p.cliente} | ${p.projeto} | ${p.produto} | ${p.medida}`;
+        op.dataset.info = `${p.codigo} ${p.cliente} ${p.projeto} ${p.produto} ${p.medida}`.toLowerCase();
+        select.appendChild(op);
+    });
+}
+
+function buscaInteligenteSaida() {
+    const termo = document.getElementById('buscaSaida').value.toLowerCase().trim();
+    const select = document.getElementById('selectSaida');
+
+    if(!termo) {
+        select.value = "";
+        atualizarSaldos();
+        return;
+    }
+
+    for(let op of select.options) {
+        if(op.dataset.info && op.dataset.info.includes(termo)) {
+            select.value = op.value;
+            atualizarSaldos();
+            break;
+        }
+    }
+}
+
+function atualizarSaldos() {
+    const idProd = document.getElementById('selectSaida').value;
+    const entradas = JSON.parse(localStorage.getItem(KEY_ENT)) || [];
+    const saidas = JSON.parse(localStorage.getItem(KEY_SAI)) || [];
+
+    const totalEnt = entradas
+        .filter(e => e.produtoID == idProd)
+        .reduce((a, b) => a + Number(b.qtd || 0), 0);
+
+    const totalSai = saidas
+        .filter(s => s.id_vinculo == idProd)
+        .reduce((a, b) => a + Number(b.qtd || 0), 0);
+
+    document.getElementById('v-entrada').innerText = totalEnt;
+    document.getElementById('v-saida').innerText = totalSai;
+    document.getElementById('v-saldo').innerText = totalEnt - totalSai;
+}
+
+function confirmarSaida() {
+    const idProd = document.getElementById('selectSaida').value;
+    const qtd = Number(document.getElementById('qtdSaida').value) || 0;
+    const saldo = Number(document.getElementById('v-saldo').innerText);
+
+    if(!idProd || qtd <= 0) {
+        alert("⚠️ Selecione o item e a quantidade!");
+        return;
+    }
+
+    if(qtd > saldo) {
+        alert("❌ Saldo insuficiente na Entrada!");
+        return;
+    }
+
+    const novaSaida = {
+        id: Date.now(),
+        id_vinculo: idProd,
+        produtoID: idProd,
+        data: new Date().toLocaleDateString('pt-BR'),
+        qtd: qtd,
+        destino: document.getElementById('destinoSaida').value
+    };
+
+    let saidas = JSON.parse(localStorage.getItem(KEY_SAI)) || [];
+    saidas.unshift(novaSaida);
+    localStorage.setItem(KEY_SAI, JSON.stringify(saidas));
+
+    alert("✅ Baixa realizada com sucesso!");
+    document.getElementById('qtdSaida').value = "";
+    document.getElementById('destinoSaida').value = "";
+
+    atualizarSaldos();
+    renderizarTabelaSaida();
+}
+
+function renderizarTabelaSaida() {
+    const saidas = JSON.parse(localStorage.getItem(KEY_SAI)) || [];
+    const produtos = JSON.parse(localStorage.getItem(KEY_CAD)) || [];
+    const corpo = document.getElementById('corpoTabelaSaida');
+    corpo.innerHTML = "";
+
+    saidas.forEach((s, indice) => {
+        const ref = produtos.find(p => p.id == s.id_vinculo || p.id == s.produtoID) || {
+            codigo: "---",
+            cliente: "EXCLUÍDO",
+            projeto: "-",
+            produto: "-",
+            medida: "-"
+        };
+
+        corpo.innerHTML += `
+            <tr>
+                <td style="color:var(--primary); font-weight:bold">${indice + 1}</td>
+                <td>${s.data}</td>
+                <td style="color:var(--primary); font-weight:bold">${ref.codigo}</td>
+                <td><div>${ref.cliente}</div><small style="color:#777">${ref.projeto}</small></td>
+                <td><div>${ref.produto || "-"}</div><small style="color:#777">${ref.medida || "-"}</small></td>
+                <td style="font-weight:bold; font-size:14px; color:var(--danger);">${s.qtd}</td>
+                <td>${s.destino || "-"}</td>
+                <td><button class="btn-lixeira" onclick="excluirSaida(${s.id})">🗑️</button></td>
+            </tr>`;
+    });
+
+    filtrarHistoricoSaida();
+}
+
+function filtrarHistoricoSaida() {
+    const termo = document.getElementById('filtroHistoricoSaida').value.toLowerCase();
+    const linhas = document.querySelectorAll('#corpoTabelaSaida tr');
+
+    linhas.forEach(linha => {
+        linha.style.display = linha.innerText.toLowerCase().includes(termo) ? '' : 'none';
+    });
+}
+
+function limparFiltroHistoricoSaida(){
+    document.getElementById('filtroHistoricoSaida').value = '';
+    filtrarHistoricoSaida();
+}
+
+function limparBuscaSaida(){
+    document.getElementById('buscaSaida').value = '';
+    document.getElementById('selectSaida').value = '';
+    atualizarSaldos();
+}
+
+function excluirSaida(id) {
+    if(!confirm("Deseja excluir esta baixa?")) return;
+
+    let saidas = JSON.parse(localStorage.getItem(KEY_SAI)) || [];
+
+    localStorage.setItem(
+        KEY_SAI,
+        JSON.stringify(saidas.filter(s => Number(s.id) !== Number(id)))
+    );
+
+    renderizarTabelaSaida();
+    atualizarSaldos();
+}
+</script>
+
+</body>
+</html>
