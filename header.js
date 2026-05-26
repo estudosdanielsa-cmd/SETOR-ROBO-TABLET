@@ -1,5 +1,5 @@
 // 1. CONFIGURAÇÃO: Insira aqui as chaves que você copiou do Supabase
-const SUPABASE_URL = "https://lnmbbziyesrgrzqxwvhp.supabase.co";
+const SUPABASE_URL = "https://lnmbbziyesrgrzqxwvhp.supabase.co/rest/v1/";
 const SUPABASE_KEY = "sb_publishable_Z_6qpZxu9JlFD-Wnqyz2DA_PQuXTBgN";
 
 // 2. CONEXÃO: Cria o cliente oficial de comunicação com a nuvem
