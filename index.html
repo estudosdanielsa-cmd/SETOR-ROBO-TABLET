@@ -117,7 +117,7 @@
     <div class="container">
         <div class="header-titulo">
             <h1 class="titulo-principal">SETOR ROBÔ</h1>
-            <div class="sub-titulo">CONTROLE DE PRODUÇÃO</div>
+            <div class="sub-titulo">CONTROLE DE PRODUCTION</div>
         </div>
 
         <button class="btn" onclick="clicar(event,'paginas/cadastro.html')">⚙️ CADASTRO</button>
@@ -142,7 +142,9 @@
     </div>
 
     <div class="creditos">Elaborado por: D.ARTCOM--Daniel</div>
-    <audio id="somSolda"><source src="img/solda.mp3"></audio>
+    
+    <!-- Link de áudio online temporário para evitar travamentos por erro 404 -->
+    <audio id="somSolda"><source src="https://google.com"></audio>
 
 <script>
     const canvas = document.getElementById("canvas");
@@ -193,53 +195,38 @@
         setTimeout(()=> window.location.href = pagina, 500);
     }
 
-    
-    
-       let passo = 0;
+    let passo = 0;
+    const passos = [
+        "👋 <b>BOAS-VINDAS</b><br>Bem-vindo ao sistema oficial do SETOR ROBÔ.<br>Todo o controle de produção é sincronizado automaticamente.",
+        "1️⃣ <b>CADASTRO</b><br>Cadastre clientes, projetos, códigos, produtos e medidas.<br>O cadastro é a base principal do controle."
+    ];
 
-const passos = [
-
-"👋 <b>BOAS-VINDAS</b><br>Bem-vindo ao sistema oficial do SETOR ROBÔ.<br>Todo o controle de produção é sincronizado automaticamente.",
-
-"1️⃣ <b>CADASTRO</b><br>Cadastre clientes, projetos, códigos, produtos e medidas.<br>O cadastro é a base principal de todo o sistema.",
-
-"2️⃣ <b>ENTRADA</b><br>Registre entradas de produção e materiais.<br>As informações ficam sincronizadas automaticamente com metas e relatórios.",
-
-"3️⃣ <b>SAÍDA</b><br>Registre saídas de peças prontas.<br>O sistema realiza baixa automática no saldo.",
-
-"4️⃣ <b>META</b><br>Defina metas individuais para cada cliente e projeto.<br>O progresso é calculado automaticamente pela produção registrada.",
-
-"5️⃣ <b>RELATÓRIO OFICIAL</b><br>Visualize entradas registradas, ocorrências, filtros e produção detalhada por item.",
-
-"6️⃣ <b>RELATÓRIO GERAL</b><br>Exibe entradas, saídas e saldo geral sincronizado em tempo real.",
-
-"7️⃣ <b>RESUMO CONSOLIDADO</b><br>Mostra totais de entrada, saída e saldo separados por cliente e projeto.",
-
-"8️⃣ <b>FILTROS</b><br>Todos os relatórios possuem filtros por:<br>cliente, projeto, código, produto, medida e datas.",
-
-"9️⃣ <b>OCORRÊNCIAS</b><br>Problemas ou observações podem ser registrados e filtrados no relatório oficial.",
-
-"🔟 <b>SALDO AUTOMÁTICO</b><br>O sistema calcula automaticamente entradas menos saídas em tempo real.",
-
-"1️⃣1️⃣ <b>SINCRONIZAÇÃO</b><br>Ao alterar dados do cadastro, entrada, saída, metas e relatórios permanecem vinculados.",
-
-"1️⃣2️⃣ <b>ATUALIZAÇÃO</b><br>Use os botões de atualizar dos relatórios para sincronizar imediatamente os dados exibidos.",
-
-"1️⃣3️⃣ <b>IMPRESSÃO PDF</b><br>Os relatórios podem ser impressos ou salvos em PDF diretamente pelo sistema.",
-
-"✅ <b>SISTEMA FINALIZADO</b><br>SETOR ROBÔ sincronizado com controle de produção, metas, saldo, relatórios e histórico completo."
-
-];
-    
-
-    function abrirAjuda(){
+    function abrirAjuda() {
+        passo = 0;
         document.getElementById("ajudaBox").style.display = "flex";
-        atualizarTexto();
+        atualizarAjuda();
     }
-    function fecharAjuda(){ document.getElementById("ajudaBox").style.display = "none"; }
-    function proximo(){ if(passo < passos.length - 1) { passo++; atualizarTexto(); } }
-    function anterior(){ if(passo > 0) { passo--; atualizarTexto(); } }
-    function atualizarTexto(){ document.getElementById("textoAjuda").innerHTML = passos[passo]; }
+    
+    function fecharAjuda() { 
+        document.getElementById("ajudaBox").style.display = "none"; 
+    }
+    
+    function atualizarAjuda() { 
+        document.getElementById("textoAjuda").innerHTML = passos[passo]; 
+    }
+    
+    function proximo() { 
+        if(passo < passos.length - 1) { passo++; atualizarAjuda(); } 
+    }
+    
+    function anterior() { 
+        if(passo > 0) { passo--; atualizarAjuda(); } 
+    }
 </script>
+
+<!-- Conexões essenciais do banco de dados na nuvem -->
+<script src="https://jsdelivr.net"></script>
+<script src="header.js"></script>
+
 </body>
 </html>
